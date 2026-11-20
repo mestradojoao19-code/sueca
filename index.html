@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#d6c9ab">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Sueca">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Marcador de Sueca</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&display=swap">
+<style>
+/* Layout: uma folha de papel pousada numa mesa. No topo da folha o título; por baixo, o nome da
+   Equipa 1, o marcador (linha horizontal atravessada por dez traços) e o nome da Equipa 2.
+   As bolinhas ficam nas pontas dos traços: a Equipa 1 em cima, a Equipa 2 em baixo.
+   Os botões ficam na mesa, fora da folha. */
+:root {
+  --desk: #d6c9ab;
+  --desk-deep: #c8b995;
+  --paper: #f2e8d0;
+  --paper-edge: #e2d3b0;
+  --ink: #26221c;
+  --ink-soft: #5b5142;
+  --ink1: #1f3b6e;
+  --ink2: #a3262a;
+  --font-display: 'IM Fell English SC', Georgia, 'Times New Roman', serif;
+  --font-body: 'IM Fell English', Georgia, 'Times New Roman', serif;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+
+html, body { min-height: 100%; }
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+button, .zone { touch-action: manipulation; }
+
+body {
+  margin: 0;
+  background: radial-gradient(130% 100% at 50% 0%, var(--desk) 0%, var(--desk-deep) 100%);
+  background-color: var(--desk);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 18px;
+  line-height: 1.4;
+  padding-block: 24px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+.wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* ---------- Folha ---------- */
+.sheet {
+  position: relative;
+  padding: clamp(20px, 5vw, 44px) clamp(12px, 4vw, 40px) clamp(18px, 4vw, 34px);
+  background-color: var(--paper);
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .35  0 0 0 0 .27  0 0 0 0 .15  0 0 0 .09 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"),
+    radial-gradient(120% 90% at 50% 38%, #f7eed9 0%, var(--paper) 55%, var(--paper-edge) 100%);
+  border-radius: 3px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.5) inset,
+    0 2px 3px rgba(60, 40, 10, 0.25),
+    0 18px 36px -12px rgba(60, 40, 10, 0.35);
+}
+
+.sheet-head { text-align: center; margin-bottom: clamp(10px, 3vw, 22px); }
+
+.sheet-head h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.3rem, 9vw, 3.5rem);
+  letter-spacing: 0.12em;
+  line-height: 1.05;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.sheet-head .sub {
+  margin: 4px 0 0;
+  font-style: italic;
+  color: var(--ink-soft);
+  font-size: 1.05rem;
+}
+
+.rule {
+  width: min(180px, 40%);
+  height: 5px;
+  margin: 12px auto 0;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+  opacity: 0.8;
+}
+
+/* ---------- Nomes das equipas ---------- */
+.team-name {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 6px 8px 4px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1.5px dotted currentColor;
+  border-radius: 0;
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: clamp(1.35rem, 5vw, 1.8rem);
+  line-height: 1.2;
+  text-align: center;
+  text-overflow: ellipsis;
+}
+
+.team-name.t0 { color: var(--ink1); }
+.team-name.t1 { color: var(--ink2); }
+
+.team-name:focus-visible {
+  outline: 2px dashed currentColor;
+  outline-offset: 3px;
+}
+
+/* ---------- Marcador ---------- */
+.marker { margin: clamp(4px, 2vw, 14px) 0; }
+
+.marker svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#frame path { fill: none; stroke: var(--ink); stroke-linecap: round; }
+#frame .h { stroke-width: 5; }
+#frame .v { stroke-width: 6; }
+
+.mark { --c: var(--ink1); }
+.mark.t1 { --c: var(--ink2); }
+.dot .fill { fill: var(--c); fill-opacity: 0.84; stroke: var(--c); stroke-width: 2.4; stroke-linejoin: round; }
+.dot .shade { fill: var(--c); opacity: 0.6; stroke: none; }
+.dot .ring { fill: none; stroke: var(--c); stroke-width: 1.8; stroke-dasharray: 88 12; stroke-linecap: round; opacity: 0.75; }
+.oval { fill: none; stroke: var(--c); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; opacity: 0.92; }
+
+.mark.new {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pingar 0.24s ease-out both;
+}
+
+@keyframes pingar {
+  from { opacity: 0; transform: scale(0.55); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Zonas de toque sobre os traços: metade de cima marca a Equipa 1, metade de baixo a Equipa 2 */
+.zone { fill: rgba(0, 0, 0, 0); cursor: pointer; }
+
+@media (hover: hover) {
+  .zone.z0:hover { fill: color-mix(in srgb, var(--ink1) 7%, transparent); }
+  .zone.z1:hover { fill: color-mix(in srgb, var(--ink2) 7%, transparent); }
+}
+
+/* ---------- Controlos ---------- */
+.controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.team-btn {
+  --c: var(--ink1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+  min-height: 72px;
+  padding: 10px 12px;
+  font: inherit;
+  color: var(--c);
+  background: rgba(247, 239, 219, 0.6);
+  border: 2px solid var(--c);
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.12s ease, transform 0.08s ease;
+}
+
+.team-btn.t1 { --c: var(--ink2); }
+
+.team-btn .kicker {
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.team-btn .who {
+  max-width: 100%;
+  font-size: 1.3rem;
+  font-style: italic;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.team-btn:hover:not(:disabled) { background: color-mix(in srgb, var(--c) 12%, rgba(247, 239, 219, 0.6)); }
+.team-btn:active:not(:disabled) { transform: translateY(1px); }
+
+.sub-btn {
+  --c: var(--ink1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 48px;
+  padding: 8px 10px;
+  font: inherit;
+  font-size: 1.05rem;
+  color: var(--c);
+  background: transparent;
+  border: 1.5px solid var(--c);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.12s ease, transform 0.08s ease;
+}
+
+.sub-btn.t1 { --c: var(--ink2); }
+.sub-btn .ico { flex: none; width: 44px; height: 20px; }
+.sub-btn:hover:not(:disabled) { background: color-mix(in srgb, var(--c) 10%, transparent); }
+.sub-btn:active:not(:disabled) { transform: translateY(1px); }
+
+.aux {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.aux-btn {
+  min-height: 48px;
+  padding: 8px 12px;
+  font: inherit;
+  font-size: 1.05rem;
+  color: var(--ink);
+  background: transparent;
+  border: 1.5px solid var(--ink-soft);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.aux-btn:hover:not(:disabled) { background: rgba(38, 34, 28, 0.08); }
+.aux-btn:active:not(:disabled) { transform: translateY(1px); }
+
+.aux-btn.confirm {
+  color: #fff8ea;
+  background: var(--ink2);
+  border-color: var(--ink2);
+}
+
+.hint {
+  margin: 0;
+  text-align: center;
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--ink-soft);
+}
+
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+button:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Telemóvel (vertical): tudo num só ecrã, controlos junto ao polegar ---------- */
+@media (max-width: 600px) {
+  body { padding-block: 12px 16px; }
+
+  .wrap {
+    gap: 14px;
+    min-height: calc(100vh - 28px);
+    min-height: calc(100dvh - 28px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  }
+
+  .sheet {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    padding: 14px 8px 12px;
+  }
+  .sheet-head { margin-bottom: 6px; }
+  .sheet-head h1 { font-size: 2rem; letter-spacing: 0.1em; }
+  .sheet-head .sub { display: none; }
+  .rule { width: 90px; margin-top: 8px; }
+
+  .team-name { font-size: 1.35rem; padding: 4px 6px 3px; }
+
+  #frame .h { stroke-width: 6.5; }
+  #frame .v { stroke-width: 8; }
+  .oval { stroke-width: 5; }
+  .dot .fill { stroke-width: 3; }
+  .dot .ring { stroke-width: 2.4; }
+
+  .controls { margin-top: auto; gap: 10px; }
+  .team-btn { min-height: 62px; padding: 8px; }
+  .team-btn .who { font-size: 1.2rem; }
+  .sub-btn { min-height: 46px; padding: 6px; gap: 6px; font-size: 1rem; }
+  .sub-btn .ico { width: 38px; height: 17px; }
+  .aux { gap: 10px; }
+  .aux-btn { min-height: 46px; }
+  .hint { font-size: 0.95rem; }
+}
+
+/* ---------- Telemóvel deitado: folha à esquerda, controlos à direita ---------- */
+@media (orientation: landscape) and (max-height: 520px) {
+  body { padding-block: 10px; }
+
+  .wrap {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(200px, 250px);
+    align-items: start;
+    gap: 14px;
+    max-width: none;
+    min-height: 0;
+  }
+
+  .sheet { padding: 10px 12px; }
+  .sheet-head { margin-bottom: 4px; }
+  .sheet-head h1 { font-size: 1.5rem; }
+  .sheet-head .sub, .rule { display: none; }
+  .team-name { font-size: 1.15rem; }
+  .controls { margin-top: 0; }
+  .hint { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mark.new { animation: none; }
+  .team-btn, .sub-btn, .aux-btn { transition: none; }
+}
+html { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <section class="sheet" aria-label="Folha de apontamentos">
+    <header class="sheet-head">
+      <h1>Sueca</h1>
+      <p class="sub">Jogos ganhos</p>
+      <div class="rule" aria-hidden="true"></div>
+    </header>
+
+    <input id="n0" class="team-name t0" type="text" maxlength="24" autocomplete="off" spellcheck="false" aria-label="Nome da Equipa 1" title="Toque para mudar o nome">
+
+    <div class="marker">
+      <svg id="marker" viewBox="0 0 1000 400" role="img" aria-label="Marcador de jogos">
+        <defs>
+          <filter id="rough" x="-2%" y="-3%" width="104%" height="106%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="3" result="ruido"/>
+            <feDisplacementMap in="SourceGraphic" in2="ruido" scale="3.5" xChannelSelector="R" yChannelSelector="G"/>
+          </filter>
+        </defs>
+        <g filter="url(#rough)">
+          <g id="frame"></g>
+          <g id="dots"></g>
+        </g>
+        <rect id="zone0" class="zone z0" x="0" y="0" width="1000" height="200"/>
+        <rect id="zone1" class="zone z1" x="0" y="200" width="1000" height="200"/>
+      </svg>
+    </div>
+
+    <input id="n1" class="team-name t1" type="text" maxlength="24" autocomplete="off" spellcheck="false" aria-label="Nome da Equipa 2" title="Toque para mudar o nome">
+  </section>
+
+  <section class="controls" aria-label="Controlos">
+    <button id="add0" class="team-btn t0" type="button">
+      <span class="kicker">Jogo ganho por</span>
+      <span class="who" id="who0"></span>
+    </button>
+    <button id="add1" class="team-btn t1" type="button">
+      <span class="kicker">Jogo ganho por</span>
+      <span class="who" id="who1"></span>
+    </button>
+    <button id="four0" class="sub-btn t0" type="button" aria-label="Adicionar quatro bolinhas com círculo à Equipa 1">
+      <svg class="ico" viewBox="0 0 44 20" aria-hidden="true">
+        <ellipse cx="22" cy="10" rx="20" ry="8" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <circle cx="10" cy="10" r="2.6" fill="currentColor"/>
+        <circle cx="18" cy="10" r="2.6" fill="currentColor"/>
+        <circle cx="26" cy="10" r="2.6" fill="currentColor"/>
+        <circle cx="34" cy="10" r="2.6" fill="currentColor"/>
+      </svg>
+      <span>4 com círculo</span>
+    </button>
+    <button id="four1" class="sub-btn t1" type="button" aria-label="Adicionar quatro bolinhas com círculo à Equipa 2">
+      <svg class="ico" viewBox="0 0 44 20" aria-hidden="true">
+        <ellipse cx="22" cy="10" rx="20" ry="8" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <circle cx="10" cy="10" r="2.6" fill="currentColor"/>
+        <circle cx="18" cy="10" r="2.6" fill="currentColor"/>
+        <circle cx="26" cy="10" r="2.6" fill="currentColor"/>
+        <circle cx="34" cy="10" r="2.6" fill="currentColor"/>
+      </svg>
+      <span>4 com círculo</span>
+    </button>
+    <div class="aux">
+      <button id="undo" class="aux-btn" type="button">Anular última</button>
+      <button id="reset" class="aux-btn" type="button">Reiniciar</button>
+    </div>
+  </section>
+
+  <p class="hint">Toque nos traços para marcar um jogo.</p>
+
+  <p id="live" class="sr-only" aria-live="polite"></p>
+</main>
+
+<script>
+(function () {
+  var KEY = 'sueca-marcador-v1';
+  var MAX = 10;
+  var DEF = ['Equipa 1', 'Equipa 2'];
+  var Y = [62, 338];          /* altura das bolinhas: pontas de cima e de baixo dos traços */
+  var LINE_Y = 200;
+  var TOP_END = 78;
+  var BOT_END = 322;
+  var mq = window.matchMedia ? window.matchMedia('(max-width: 600px)') : null;
+  function sc() { return mq && mq.matches ? 1.25 : 1; }   /* bolinhas maiores no telemóvel */
+
+  function $(id) { return document.getElementById(id); }
+  function f(n) { return Math.round(n * 10) / 10; }
+  function strokeX(i) { return 95 + i * 90; }
+
+  function rng(seed) {
+    var s = seed | 0;
+    return function () {
+      s = (s + 0x6D2B79F5) | 0;
+      var t = Math.imul(s ^ (s >>> 15), 1 | s);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  /* ---------- Estado ---------- */
+  /* hist: lista de marcações. Cada uma é { t: equipa 0|1, s: semente, n: 1 bolinha ou 4 com círculo } */
+  function fresh() { return { names: DEF.slice(), hist: [] }; }
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var s = JSON.parse(raw);
+        var names = DEF.slice();
+        if (s && Array.isArray(s.names)) {
+          for (var i = 0; i < 2; i++) {
+            if (typeof s.names[i] === 'string') names[i] = s.names[i].slice(0, 24);
+          }
+        }
+        var c = [0, 0];
+        var hist = [];
+        var src = s && Array.isArray(s.hist) ? s.hist : [];
+        for (var j = 0; j < src.length; j++) {
+          var h = src[j];
+          if (h && (h.t === 0 || h.t === 1) && typeof h.s === 'number') {
+            var n = h.n === 4 ? 4 : 1;
+            if (c[h.t] + n <= MAX) {
+              c[h.t] += n;
+              hist.push({ t: h.t, s: h.s, n: n });
+            }
+          }
+        }
+        return { names: names, hist: hist };
+      }
+    } catch (e) { /* sem armazenamento */ }
+    return fresh();
+  }
+
+  var state = load();
+  var justAdded = -1;
+  var confirmTimer = null;
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignorar */ }
+  }
+
+  function count(t) {
+    var n = 0;
+    for (var i = 0; i < state.hist.length; i++) if (state.hist[i].t === t) n += state.hist[i].n;
+    return n;
+  }
+
+  function label(i) {
+    var n = (state.names[i] || '').trim();
+    return n || DEF[i];
+  }
+
+  /* ---------- Desenho à mão ---------- */
+  function smoothPath(pts) {
+    var n = pts.length;
+    var d = 'M' + f(pts[0][0]) + ' ' + f(pts[0][1]);
+    for (var i = 0; i < n; i++) {
+      var p0 = pts[(i - 1 + n) % n], p1 = pts[i], p2 = pts[(i + 1) % n], p3 = pts[(i + 2) % n];
+      d += ' C' + f(p1[0] + (p2[0] - p0[0]) / 6) + ' ' + f(p1[1] + (p2[1] - p0[1]) / 6) +
+        ' ' + f(p2[0] - (p3[0] - p1[0]) / 6) + ' ' + f(p2[1] - (p3[1] - p1[1]) / 6) +
+        ' ' + f(p2[0]) + ' ' + f(p2[1]);
+    }
+    return d + 'Z';
+  }
+
+  function openPath(pts) {
+    var n = pts.length;
+    var d = 'M' + f(pts[0][0]) + ' ' + f(pts[0][1]);
+    for (var i = 0; i < n - 1; i++) {
+      var p0 = pts[Math.max(i - 1, 0)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(i + 2, n - 1)];
+      d += ' C' + f(p1[0] + (p2[0] - p0[0]) / 6) + ' ' + f(p1[1] + (p2[1] - p0[1]) / 6) +
+        ' ' + f(p2[0] - (p3[0] - p1[0]) / 6) + ' ' + f(p2[1] - (p3[1] - p1[1]) / 6) +
+        ' ' + f(p2[0]) + ' ' + f(p2[1]);
+    }
+    return d;
+  }
+
+  function blob(cx, cy, r, rnd) {
+    var n = 14;
+    var p1 = rnd() * Math.PI * 2, p2 = rnd() * Math.PI * 2;
+    var pts = [];
+    for (var i = 0; i < n; i++) {
+      var a = (i / n) * Math.PI * 2;
+      var k = 1 + 0.07 * Math.sin(2 * a + p1) + 0.05 * Math.sin(3 * a + p2) + (rnd() - 0.5) * 0.05;
+      pts.push([cx + r * k * Math.cos(a), cy + r * k * 0.97 * Math.sin(a)]);
+    }
+    return pts;
+  }
+
+  function dotMarkup(seed, cx, cy) {
+    var rnd = rng(seed);
+    var z = sc();
+    var main = smoothPath(blob(cx, cy, 21 * z, rnd));
+    var shade = smoothPath(blob(cx + (rnd() - 0.5) * 3, cy + (rnd() - 0.5) * 3, 15.5 * z, rnd));
+    var ring = smoothPath(blob(cx, cy, 25 * z, rnd));
+    return '<g class="dot">' +
+      '<path class="fill" d="' + main + '"/>' +
+      '<path class="shade" d="' + shade + '"/>' +
+      '<path class="ring" pathLength="100" d="' + ring + '"/>' +
+      '</g>';
+  }
+
+  /* Círculo riscado à caneta à volta de quatro bolinhas, com volta e meia de sobra como no papel */
+  function ovalMarkup(seed, cx, cy) {
+    var rnd = rng(seed ^ 0x5bd1e995);
+    var turns = 1.12 + rnd() * 0.1;
+    var N = 32;
+    var a0 = Math.PI * 0.85 + rnd() * 0.7;
+    var ph = rnd() * Math.PI * 2;
+    var pts = [];
+    for (var i = 0; i <= N; i++) {
+      var u = i / N;
+      var a = a0 + u * Math.PI * 2 * turns;
+      var k = (1 - 0.05 * u) * (1 + 0.025 * Math.sin(3 * a + ph) + (rnd() - 0.5) * 0.03);
+      pts.push([cx + (sc() > 1 ? 180 : 176) * k * Math.cos(a), cy + (sc() > 1 ? 50 : 44) * k * Math.sin(a)]);
+    }
+    return '<path class="oval" d="' + openPath(pts) + '"/>';
+  }
+
+  function markMarkup(e, start, isNew) {
+    var out = '<g class="mark t' + e.t + (isNew ? ' new' : '') + '">';
+    for (var k = 0; k < e.n; k++) {
+      out += dotMarkup(e.s + k * 7919, strokeX(start + k), Y[e.t]);
+    }
+    if (e.n === 4) out += ovalMarkup(e.s, strokeX(start + 1.5), Y[e.t]);
+    return out + '</g>';
+  }
+
+  function drawFrame() {
+    var rnd = rng(7);
+    var out = '<path class="h" d="M24 202 Q262 196 500 201 T976 199"/>';
+    for (var i = 0; i < 10; i++) {
+      var x = strokeX(i);
+      var x1 = x + (rnd() - 0.5) * 5;
+      var x2 = x + (rnd() - 0.5) * 5;
+      var xc = x + (rnd() - 0.5) * 6;
+      var y1 = TOP_END + rnd() * 6;
+      var y2 = BOT_END - rnd() * 6;
+      out += '<path d="M' + f(x1) + ' ' + f(y1) + ' Q' + f(xc) + ' ' + LINE_Y + ' ' + f(x2) + ' ' + f(y2) + '" class="v"/>';
+    }
+    $('frame').innerHTML = out;
+  }
+
+  /* ---------- Interface ---------- */
+  function render() {
+    var seen = [0, 0];
+    var html = '';
+    for (var i = 0; i < state.hist.length; i++) {
+      var e = state.hist[i];
+      html += markMarkup(e, seen[e.t], i === justAdded);
+      seen[e.t] += e.n;
+    }
+    $('dots').innerHTML = html;
+
+    $('who0').textContent = label(0);
+    $('who1').textContent = label(1);
+    $('add0').disabled = seen[0] >= MAX;
+    $('add1').disabled = seen[1] >= MAX;
+    $('four0').disabled = seen[0] + 4 > MAX;
+    $('four1').disabled = seen[1] + 4 > MAX;
+    $('undo').disabled = state.hist.length === 0;
+    $('reset').disabled = state.hist.length === 0 && !confirmTimer;
+
+    $('marker').setAttribute('aria-label', 'Marcador de jogos. ' + label(0) + ': ' + seen[0] +
+      ' de 10. ' + label(1) + ': ' + seen[1] + ' de 10.');
+  }
+
+  function announce(msg) { $('live').textContent = msg; }
+
+  function cancelConfirm() {
+    if (confirmTimer) { clearTimeout(confirmTimer); confirmTimer = null; }
+    var b = $('reset');
+    b.textContent = 'Reiniciar';
+    b.classList.remove('confirm');
+  }
+
+  function add(t, n) {
+    if (count(t) + n > MAX) return;
+    cancelConfirm();
+    state.hist.push({ t: t, s: (Math.random() * 2147483647) | 0, n: n });
+    justAdded = state.hist.length - 1;
+    save();
+    render();
+    announce(n === 4
+      ? label(t) + ': quatro jogos com círculo. Total: ' + count(t) + ' de 10.'
+      : label(t) + ' ganhou um jogo. Total: ' + count(t) + ' de 10.');
+  }
+
+  function undo() {
+    if (!state.hist.length) return;
+    cancelConfirm();
+    var last = state.hist.pop();
+    justAdded = -1;
+    save();
+    render();
+    announce(last.n === 4
+      ? 'Grupo de quatro de ' + label(last.t) + ' anulado.'
+      : 'Última marcação de ' + label(last.t) + ' anulada.');
+  }
+
+  function reset() {
+    if (!confirmTimer) {
+      var b = $('reset');
+      b.textContent = 'Confirmar reinício';
+      b.classList.add('confirm');
+      confirmTimer = setTimeout(function () { cancelConfirm(); render(); }, 4000);
+      return;
+    }
+    cancelConfirm();
+    state.hist = [];
+    justAdded = -1;
+    save();
+    render();
+    announce('Marcador reiniciado.');
+  }
+
+  function bindName(i) {
+    var input = $('n' + i);
+    input.value = state.names[i];
+    input.addEventListener('input', function () {
+      state.names[i] = input.value;
+      save();
+      $('who' + i).textContent = label(i);
+    });
+    input.addEventListener('blur', function () {
+      if (!input.value.trim()) {
+        input.value = DEF[i];
+        state.names[i] = DEF[i];
+        save();
+      }
+      render();
+    });
+    input.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter') input.blur();
+    });
+  }
+
+  $('add0').addEventListener('click', function () { add(0, 1); });
+  $('add1').addEventListener('click', function () { add(1, 1); });
+  $('four0').addEventListener('click', function () { add(0, 4); });
+  $('four1').addEventListener('click', function () { add(1, 4); });
+  $('zone0').addEventListener('click', function () { add(0, 1); });
+  $('zone1').addEventListener('click', function () { add(1, 1); });
+  $('undo').addEventListener('click', undo);
+  $('reset').addEventListener('click', reset);
+  $('reset').addEventListener('blur', function () { if (confirmTimer) { cancelConfirm(); render(); } });
+
+  bindName(0);
+  bindName(1);
+  drawFrame();
+  render();
+
+  /* Ao rodar o telemóvel ou mudar a largura, redesenha as bolinhas ao tamanho certo */
+  if (mq) {
+    var onMq = function () { justAdded = -1; render(); };
+    if (mq.addEventListener) mq.addEventListener('change', onMq);
+    else if (mq.addListener) mq.addListener(onMq);
+  }
+})();
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("sw.js").catch(function () {});
+  });
+}
+</script>
+</body>
+</html>
